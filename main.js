@@ -18,6 +18,11 @@ var fondo;
 var juego = {
   estado: 'iniciando'  
 };
+var textoRespuesta = {
+    contador: -1,
+	titulo: ' ',
+	subtitulo: ' '
+}
 // definicion de las funciones
 function loadMedia(){
     fondo = new Image();
@@ -81,23 +86,22 @@ function moverNave(){
 	else teclado.fire = false;
 }
 function dibujarDisparosEnemigos(){
+    ctx.save();
+	ctx.fillStyle = 'yellow';
     for(var i in disparosEnemigos){
 	    var disparo = disparosEnemigos[i];
-		ctx.save();
-		ctx.fillStyle = 'yellow';
 		ctx.fillRect(disparo.x, disparo.y, disparo.width, disparo.height);
-		ctx.restore();
-		
 	}
+	ctx.restore();
 }
 function moverDisparosEnemigos(){
     for(var i in disparosEnemigos){
 	    var disparo = disparosEnemigos[i];
 		disparo.y += 3;
 	}	
-	disparosEnemigos = disparosEnemigos.filter(function(disparos){
-	    return disparo.y < canvas.height;
-	});
+	//disparosEnemigos = disparosEnemigos.filter(function(disparos){
+	   // return disparo.y < canvas.height;
+	//});
 }
 function actualizaEnemigos(){
     function agregarDisparosEnemigos(enemigo){
@@ -107,7 +111,6 @@ function actualizaEnemigos(){
 			width: 10,
 			height: 33,
 			contador: 0
-			
 		}
 	}
     if(juego.estado == 'iniciando'){
@@ -153,7 +156,7 @@ function moverDisparos(){
 		disparo.y -= 6;
 	}
 	//disparos = disparos.filter(function disparo(){
-	    //return disparo.y > 0;
+	  //  return disparo.y > 0;
 	//});
 }
 function fire(){
@@ -172,6 +175,42 @@ function dibujarDisparos(){
 		ctx.fillRect(disparo.x, disparo.y, disparo.width, disparo.height);
 	}
 	ctx.restore();
+}
+function dibujarTexto(){
+    if(textoRespuesta.contador == -1) return;
+	var alpha = textoRespuesta.contador/50.0;
+	if(alpha>1){
+	    for(var i in enemigos){
+		    delete enemigo[i];
+		}
+	}
+	ctx.save();
+	ctx.globalAlpha = alpha;
+	if(juego.estado == 'perdido'){
+	    ctx.fillStyle = 'white';
+		ctx.font = 'Bold 40pt Arial';
+		ctx.fillText(textoRespuesta.titulo, 140, 200);
+		ctx.font = '14pt Arial';
+		ctx.fillText(textoRespuesta.subtitulo, 190, 250);
+	}
+	if(juego.estado == 'has ganado'){
+	    ctx.fillStyle = 'white';
+		ctx.font = 'Bold 40pt Arial';
+		ctx.fillText(textoRespuesta.titulo, 140, 200);
+		ctx.font = '14pt Arial';
+		ctx.fillText(textoRespuesta.subtitulo, 190, 250);
+	}
+}
+function actualizarEstadoJuego(){
+    if(juego.estado == 'jugando' && enemigos.length == 0){
+	    juego.estado = 'has ganado';
+		textoRespuesta.titulo = 'Has ganado';
+		textoRespuesta.subtitulo = 'presiona la tecla R para reiniciar';
+		textoRespuesta.contador = 0;
+	}
+	if(textoRespuesta.contador >= 0){
+	    textoRespuesta.contador++;
+	}
 }
 function coalision(a,b){
     var coalision = false;
@@ -205,14 +244,22 @@ function detectarCoalision(){
 		    }
 		}
 	}
+	if(nave.estado == 'golpeado' || nave.estado == 'muerto') return;
+	for(var i in disparosEnemigos){    
+		var disparo = disparosEnemigos[i];
+		if(coalision(disparo,nave)){
+		    nave.estado = 'golpeado';
+		}
+	}
 }
-function aleatorio(inferior, superior){
+function aleatorio(inferior,superior){
      var probabilidad = superior - inferior;
-	 var al = Math.random() * probabilidad;
-	 al = Math.floor(al);
-	 return parseInt(inferior) + al;
+	 var aleatorio = Math.random() * probabilidad;
+	 aleatorio = Math.floor(aleatorio);
+	 return parseInt(inferior) + aleatorio;
 }
 function frameLoop(){
+    actualizarEstadoJuego();
     moverNave();
 	moverDisparos();
 	moverDisparosEnemigos();
@@ -222,6 +269,7 @@ function frameLoop(){
 	dibujarEnemigos();
 	dibujarDisparosEnemigos();
 	dibujarDisparos();
+	dibujarTexto();
 	dibujarNave();
 }
 // ejecucion de las funciones
