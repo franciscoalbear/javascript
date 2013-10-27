@@ -214,11 +214,11 @@ function aleatorio(inferior, superior){
 }
 function frameLoop(){
     moverNave();
-	actualizaEnemigos();
 	moverDisparos();
 	moverDisparosEnemigos();
     drawBackground();
 	detectarCoalision();
+	actualizaEnemigos();
 	dibujarEnemigos();
 	dibujarDisparosEnemigos();
 	dibujarDisparos();
