@@ -6,7 +6,9 @@ var nave = {
     x:100,
 	y: canvas.height-100,
 	width:50,
-	height:50
+	height:50,
+	estado: 'vivo',
+	contador: 0
 }
 var teclado = {};
 
@@ -84,6 +86,17 @@ function moverNave(){
 		
 	}
 	else teclado.fire = false;
+	if(nave.estado == 'golpeado'){
+	    nave.contador++;
+		if(nave.contador >= 20){
+		    nave.contador = 0;
+			nave.estado = 'muerto';
+			juego.estado = 'perdido';
+			textoRespuesta.titulo = 'GameOver';
+			textoRespuesta.subtitulo = 'pulsa la tecla R para continuar';
+			textoRespuesta.contador = 0;
+		}
+	}
 }
 function dibujarDisparosEnemigos(){
     ctx.save();
@@ -203,13 +216,18 @@ function dibujarTexto(){
 }
 function actualizarEstadoJuego(){
     if(juego.estado == 'jugando' && enemigos.length == 0){
-	    juego.estado = 'has ganado';
+	    juego.estado = 'ganado';
 		textoRespuesta.titulo = 'Has ganado';
 		textoRespuesta.subtitulo = 'presiona la tecla R para reiniciar';
 		textoRespuesta.contador = 0;
 	}
 	if(textoRespuesta.contador >= 0){
 	    textoRespuesta.contador++;
+	}
+	if((juego.estado == 'perdido' || juego.estado == 'ganado') && teclado[82]){
+	    juego,estado = 'iniciando';
+		nave.estado = 'vivo';
+		textoRespuesta.contador = -1;
 	}
 }
 function coalision(a,b){
