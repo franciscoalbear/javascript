@@ -93,7 +93,7 @@ function moverNave(){
 			nave.estado = 'muerto';
 			juego.estado = 'perdido';
 			textoRespuesta.titulo = 'GameOver';
-			textoRespuesta.subtitulo = 'pulsa la tecla R para continuar';
+			textoRespuesta.subtitulo = 'pulsa ENTER para continuar';
 			textoRespuesta.contador = 0;
 		}
 	}
@@ -146,7 +146,7 @@ function actualizaEnemigos(){
 			if(enemigo && enemigo.estado == 'vivo'){
 			    enemigo.contador++;
 				enemigo.x += Math.sin(enemigo.contador * Math.PI / 90) * 5;
-				if(aleatorio(0, enemigo.length * 10) == 4){
+				if(aleatorio(0, enemigo.contador /** 10*/) == 4){
 				    disparosEnemigos.push(agregarDisparosEnemigos(enemigo));
 				}
 			}
@@ -194,7 +194,7 @@ function dibujarTexto(){
 	var alpha = textoRespuesta.contador/50.0;
 	if(alpha>1){
 	    for(var i in enemigos){
-		    delete enemigo[i];
+		    delete enemigos[i];
 		}
 	}
 	ctx.save();
@@ -216,16 +216,16 @@ function dibujarTexto(){
 }
 function actualizarEstadoJuego(){
     if(juego.estado == 'jugando' && enemigos.length == 0){
-	    juego.estado = 'ganado';
+	    juego.estado = 'has ganado';
 		textoRespuesta.titulo = 'Has ganado';
-		textoRespuesta.subtitulo = 'presiona la tecla R para reiniciar';
+		textoRespuesta.subtitulo = 'presiona ENTER para reiniciar';
 		textoRespuesta.contador = 0;
 	}
 	if(textoRespuesta.contador >= 0){
 	    textoRespuesta.contador++;
 	}
-	if((juego.estado == 'perdido' || juego.estado == 'ganado') && teclado[82]){
-	    juego,estado = 'iniciando';
+	if((juego.estado == 'perdido' || juego.estado == 'has ganado') && teclado[13]){
+	    juego.estado = 'iniciando';
 		nave.estado = 'vivo';
 		textoRespuesta.contador = -1;
 	}
